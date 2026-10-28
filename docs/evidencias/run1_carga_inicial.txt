@@ -1,0 +1,39 @@
+2026-10-20T01:35:43.849+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=inicio, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, end_date=2026
+2026-10-20T01:35:43.879+0000 {etl_utils.py:50} INFO - Aplicando DDL: 01_schema_e_controle.sql
+2026-10-20T01:35:43.896+0000 {etl_utils.py:50} INFO - Aplicando DDL: 02_dimensoes.sql
+2026-10-20T01:35:43.916+0000 {etl_utils.py:50} INFO - Aplicando DDL: 03_fato.sql
+2026-10-20T01:35:43.933+0000 {etl_utils.py:50} INFO - Aplicando DDL: 04_dim_tempo_carga.sql
+2026-10-20T01:35:43.999+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=garantir_estrutura, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, e
+2026-10-20T01:35:44.041+0000 {etl_utils.py:59} INFO - Watermarks lidos: {'dim_produto': '1900-01-01 00:00:00', 'dim_cliente': '1900-01-01 00:00:00', 'dim_territorio': '1900-01-01 00:00:00', 'dim_vendedor': '1900-01-01 00:00:00', '
+2026-10-20T01:35:44.055+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=ler_watermark, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, end_da
+2026-10-20T01:35:44.089+0000 {etl_utils.py:121} INFO - [dim_produto] Extraindo registros com ModifiedDate > 1900-01-01 00:00:00
+2026-10-20T01:35:44.129+0000 {etl_utils.py:148} INFO - [dim_produto] 504 registros inseridos/atualizados.
+2026-10-20T01:35:44.142+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=load_dim_produto, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, end
+2026-10-20T01:35:44.167+0000 {etl_utils.py:121} INFO - [dim_cliente] Extraindo registros com ModifiedDate > 1900-01-01 00:00:00
+2026-10-20T01:35:44.672+0000 {etl_utils.py:148} INFO - [dim_cliente] 19820 registros inseridos/atualizados.
+2026-10-20T01:35:44.687+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=load_dim_cliente, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, end
+2026-10-20T01:35:44.710+0000 {etl_utils.py:121} INFO - [dim_territorio] Extraindo registros com ModifiedDate > 1900-01-01 00:00:00
+2026-10-20T01:35:44.732+0000 {etl_utils.py:148} INFO - [dim_territorio] 10 registros inseridos/atualizados.
+2026-10-20T01:35:44.745+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=load_dim_territorio, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, 
+2026-10-20T01:35:44.767+0000 {etl_utils.py:121} INFO - [dim_oferta_especial] Extraindo registros com ModifiedDate > 1900-01-01 00:00:00
+2026-10-20T01:35:44.787+0000 {etl_utils.py:148} INFO - [dim_oferta_especial] 16 registros inseridos/atualizados.
+2026-10-20T01:35:44.800+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=load_dim_oferta_especial, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_da
+2026-10-20T01:35:44.822+0000 {etl_utils.py:121} INFO - [dim_vendedor] Extraindo registros com ModifiedDate > 1900-01-01 00:00:00
+2026-10-20T01:35:44.845+0000 {etl_utils.py:148} INFO - [dim_vendedor] 17 registros inseridos/atualizados.
+2026-10-20T01:35:44.856+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=load_dim_vendedor, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, en
+2026-10-20T01:35:44.887+0000 {etl_utils.py:159} INFO - [fact_vendas] Extraindo itens de pedido com ModifiedDate > 1900-01-01 00:00:00
+2026-10-20T01:35:53.674+0000 {etl_utils.py:185} INFO - [fact_vendas] 121317 itens inseridos/atualizados.
+2026-10-20T01:35:53.706+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=load_fact_vendas, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, end
+2026-10-20T01:35:53.752+0000 {etl_utils.py:86} INFO - Controle atualizado: dim_produto -> 504 linhas, novo watermark=2025-02-07 10:03:55.510000
+2026-10-20T01:35:53.763+0000 {etl_utils.py:86} INFO - Controle atualizado: dim_cliente -> 19820 linhas, novo watermark=2025-09-11 11:15:07.497000
+2026-10-20T01:35:53.773+0000 {etl_utils.py:86} INFO - Controle atualizado: dim_territorio -> 10 linhas, novo watermark=2019-04-30 00:00:00
+2026-10-20T01:35:53.783+0000 {etl_utils.py:86} INFO - Controle atualizado: dim_vendedor -> 17 linhas, novo watermark=2024-05-22 00:00:00
+2026-10-20T01:35:53.793+0000 {etl_utils.py:86} INFO - Controle atualizado: dim_oferta_especial -> 16 linhas, novo watermark=2025-02-28 00:00:00
+2026-10-20T01:35:53.802+0000 {etl_utils.py:86} INFO - Controle atualizado: fact_vendas -> 121317 linhas, novo watermark=2025-07-06 00:00:00
+2026-10-20T01:35:53.806+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=atualizar_watermark, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, 
+2026-10-20T01:35:53.960+0000 {etl_utils.py:211} INFO - OLTP: 121317 itens | US$ 109846381.4250
+2026-10-20T01:35:53.960+0000 {etl_utils.py:212} INFO - DW  : 121317 itens | US$ 109846381.4250
+2026-10-20T01:35:53.960+0000 {etl_utils.py:213} INFO - Itens sem produto: 0 | sem cliente: 0
+2026-10-20T01:35:53.972+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=validar_carga, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, end_da
+2026-10-20T01:35:54.006+0000 {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dw_adventureworks_etl, task_id=fim, run_id=manual__2026-10-19T00:00:00+00:00, execution_date=20261019T000000, start_date=, end_date=2026102
+exit=0

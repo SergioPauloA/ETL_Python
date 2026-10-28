@@ -1,0 +1,27 @@
+# Segredos e configuração local
+.env
+*.env
+!.env.example
+
+# Airflow
+logs/
+airflow.db
+airflow-webserver.pid
+standalone_admin_password.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Dados e volumes locais
+aw_data/
+data/
+pgdata/
+*.csv
+
+# IDE / SO
+.idea/
+.vscode/
+.DS_Store

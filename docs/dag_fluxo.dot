@@ -1,0 +1,21 @@
+digraph D {
+  rankdir=LR; bgcolor="white"; pad=0.2; nodesep=0.25; ranksep=0.5;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, penwidth=1.2];
+  edge [color="#555555"];
+  inicio [label="inicio", fillcolor="#E8E8E8"];
+  est [label="garantir_\nestrutura", fillcolor="#D5F5E3"];
+  wm  [label="ler_\nwatermark", fillcolor="#D5F5E3"];
+  d1 [label="load_dim_\nproduto", fillcolor="#D6EAF8"];
+  d2 [label="load_dim_\ncliente", fillcolor="#D6EAF8"];
+  d3 [label="load_dim_\nterritorio", fillcolor="#D6EAF8"];
+  d4 [label="load_dim_\nvendedor", fillcolor="#D6EAF8"];
+  d5 [label="load_dim_\noferta_especial", fillcolor="#D6EAF8"];
+  f  [label="load_\nfact_vendas", fillcolor="#FDEBD0"];
+  up [label="atualizar_\nwatermark", fillcolor="#D5F5E3"];
+  v  [label="validar_\ncarga", fillcolor="#FCF3CF"];
+  fim [label="fim", fillcolor="#E8E8E8"];
+  inicio -> est -> wm;
+  wm -> d1; wm -> d2; wm -> d3; wm -> d4; wm -> d5;
+  d1 -> f; d2 -> f; d3 -> f; d4 -> f; d5 -> f;
+  f -> up -> v -> fim;
+}
