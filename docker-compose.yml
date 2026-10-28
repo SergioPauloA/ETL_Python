@@ -1,39 +1,48 @@
-# Ambiente local: Airflow + PostgreSQL (OLTP AdventureWorks) + PostgreSQL (DW)
-# Uso: cp .env.example .env  (edite as senhas)  ->  docker compose up -d
+# Ambiente LOCAL de estudo: Airflow + PostgreSQL (OLTP AdventureWorks) + PostgreSQL (DW)
+#
+# SEGURANÇA / CREDENCIAIS
+#  - Nenhum login/senha em arquivo versionado: os bancos usam autenticação "trust"
+#    e as portas ficam acessíveis apenas em 127.0.0.1 (uso exclusivo local).
+#  - O Airflow acessa os bancos por CONEXÕES NOMEADAS (aw_oltp e dw_postgres),
+#    armazenadas no banco de metadados do Airflow (Admin > Connections).
+#  - A senha do usuário admin do Airflow é GERADA no primeiro start e gravada em
+#    logs/admin_login.txt (pasta ignorada pelo Git).
+#
+# Uso: docker compose up -d
 services:
 
   postgres-airflow:                      # metadados do Airflow
     image: postgres:16
     environment:
-      POSTGRES_USER: ${AIRFLOW_DB_USER}
-      POSTGRES_PASSWORD: ${AIRFLOW_DB_PASSWORD}
+      POSTGRES_USER: airflow
       POSTGRES_DB: airflow
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - pg_airflow:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${AIRFLOW_DB_USER}"]
+      test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
       retries: 10
 
   postgres-oltp:                         # origem: AdventureWorks (carregar conforme README)
     image: postgres:16
     environment:
-      POSTGRES_USER: ${OLTP_USER}
-      POSTGRES_PASSWORD: ${OLTP_PASSWORD}
-      POSTGRES_DB: ${OLTP_DB}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: Adventureworks
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - pg_oltp:/var/lib/postgresql/data
 
   postgres-dw:                           # destino: Data Warehouse
     image: postgres:16
     environment:
-      POSTGRES_USER: ${DW_USER}
-      POSTGRES_PASSWORD: ${DW_PASSWORD}
-      POSTGRES_DB: ${DW_DB}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: dw_adventureworks
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "5434:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - pg_dw:/var/lib/postgresql/data
 
@@ -42,15 +51,13 @@ services:
     depends_on:
       postgres-airflow:
         condition: service_healthy
-    env_file: .env
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@postgres-airflow/airflow
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow@postgres-airflow/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
-      # AIRFLOW_CONN_AW_OLTP e AIRFLOW_CONN_DW_POSTGRES vêm do .env (env_file)
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - ./dags:/opt/airflow/dags
       - ./sql:/opt/airflow/sql
@@ -60,7 +67,15 @@ services:
       - -c
       - |
         airflow db migrate
-        airflow users create --username "$$AIRFLOW_ADMIN_USER" --password "$$AIRFLOW_ADMIN_PASSWORD" --firstname Admin --lastname Admin --role Admin --email admin@example.com || echo "AVISO: usuario admin ja existe ou nao foi criado"
+        if ! airflow users list 2>/dev/null | grep -q " admin "; then
+          SENHA=$$(python -c "import secrets; print(secrets.token_urlsafe(9))")
+          airflow users create --username admin --password "$$SENHA" --firstname Admin --lastname Admin --role Admin --email admin@example.com && echo "usuario: admin | senha: $$SENHA" > /opt/airflow/logs/admin_login.txt
+        fi
+        # Conexões nomeadas do Airflow (sem senha: bancos locais com autenticação trust)
+        airflow connections delete aw_oltp > /dev/null 2>&1 || true
+        airflow connections add aw_oltp --conn-type postgres --conn-host postgres-oltp --conn-port 5432 --conn-login postgres --conn-schema Adventureworks
+        airflow connections delete dw_postgres > /dev/null 2>&1 || true
+        airflow connections add dw_postgres --conn-type postgres --conn-host postgres-dw --conn-port 5432 --conn-login postgres --conn-schema dw_adventureworks
         airflow scheduler &
         exec airflow webserver
 
