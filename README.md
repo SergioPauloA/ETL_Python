@@ -35,13 +35,13 @@ docs/
   dag_fluxo.png / .dot       # diagrama do fluxo da DAG
   dicionario_dados.md        # dicionário de dados do DW
   evidencias/                # logs reais das execuções e resultados dos KPIs
-docker-compose.yml  .env.example (sem credenciais)  .gitignore
+docker-compose.yml  .gitignore
 ```
 
 ## Como executar
 
 ### Credenciais e conexões (sem login/senha em arquivos)
-- O `.env` está no `.gitignore` e **não contém login nem senha** (`.env.example` só traz `AIRFLOW_UID`, opcional).
+- Nenhuma credencial fica em arquivos do projeto. Se você criar um `.env` local, ele já está no `.gitignore`.
 - O Airflow acessa os bancos por **conexões com ID nomeado**: `aw_oltp` (origem) e `dw_postgres` (destino).
   O `docker-compose.yml` as cadastra no Airflow na subida; elas podem ser vistas/editadas em
   **Admin > Connections** ou via CLI (`airflow connections get aw_oltp`).
