@@ -41,7 +41,7 @@ docker-compose.yml  .gitignore
 ## Como executar
 
 ### Credenciais e conexões (sem login/senha em arquivos)
-- Nenhuma credencial fica em arquivos do projeto. Se você criar um `.env` local, ele já está no `.gitignore`.
+- Nenhuma credencial fica em arquivos do projeto.
 - O Airflow acessa os bancos por **conexões com ID nomeado**: `aw_oltp` (origem) e `dw_postgres` (destino).
   O `docker-compose.yml` as cadastra no Airflow na subida; elas podem ser vistas/editadas em
   **Admin > Connections** ou via CLI (`airflow connections get aw_oltp`).
