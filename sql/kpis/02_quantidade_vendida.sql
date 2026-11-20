@@ -1,5 +1,3 @@
--- KPI 02 - Quantidade de itens vendidos
--- Fórmula: SUM(quantidade)
 SELECT COALESCE(t.ano::text, 'TOTAL')  AS ano,
        SUM(f.quantidade)               AS quantidade_vendida
 FROM dw.fact_vendas f

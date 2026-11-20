@@ -1,4 +1,3 @@
--- KPI 06 - Receita líquida por território de vendas (ranking e participação %)
 SELECT RANK() OVER (ORDER BY SUM(f.valor_liquido) DESC)                        AS posicao,
        tr.nome_territorio,
        tr.grupo,

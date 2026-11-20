@@ -1,4 +1,3 @@
--- Extração incremental: Cliente (pessoa física ou loja)
 SELECT
     c.customerid                                  AS id_cliente,
     CASE WHEN c.storeid IS NOT NULL THEN 'Loja' ELSE 'Pessoa' END AS tipo_cliente,

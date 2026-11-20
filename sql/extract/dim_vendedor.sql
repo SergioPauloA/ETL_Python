@@ -1,4 +1,3 @@
--- Extração incremental: Vendedor (SalesPerson + Person)
 SELECT
     sp.businessentityid                                        AS id_vendedor,
     COALESCE(NULLIF(TRIM(CONCAT_WS(' ', p.firstname, p.lastname)), ''),

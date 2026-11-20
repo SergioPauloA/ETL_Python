@@ -1,5 +1,3 @@
--- KPI 07 - Crescimento mensal da receita (Month over Month)
--- Fórmula: (receita_mes - receita_mes_anterior) / receita_mes_anterior * 100
 WITH mensal AS (
     SELECT t.ano_mes,
            SUM(f.valor_liquido) AS receita

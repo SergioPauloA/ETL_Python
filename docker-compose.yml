@@ -1,17 +1,6 @@
-# Ambiente LOCAL de estudo: Airflow + PostgreSQL (OLTP AdventureWorks) + PostgreSQL (DW)
-#
-# SEGURANÇA / CREDENCIAIS
-#  - Nenhum login/senha em arquivo versionado: os bancos usam autenticação "trust"
-#    e as portas ficam acessíveis apenas em 127.0.0.1 (uso exclusivo local).
-#  - O Airflow acessa os bancos por CONEXÕES NOMEADAS (aw_oltp e dw_postgres),
-#    armazenadas no banco de metadados do Airflow (Admin > Connections).
-#  - A senha do usuário admin do Airflow é GERADA no primeiro start e gravada em
-#    logs/admin_login.txt (pasta ignorada pelo Git).
-#
-# Uso: docker compose up -d
 services:
 
-  postgres-airflow:                      # metadados do Airflow
+  postgres-airflow:
     image: postgres:16
     environment:
       POSTGRES_USER: airflow
@@ -24,7 +13,7 @@ services:
       interval: 5s
       retries: 10
 
-  postgres-oltp:                         # origem: AdventureWorks (carregar conforme README)
+  postgres-oltp:
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
@@ -35,7 +24,7 @@ services:
     volumes:
       - pg_oltp:/var/lib/postgresql/data
 
-  postgres-dw:                           # destino: Data Warehouse
+  postgres-dw:
     image: postgres:16
     environment:
       POSTGRES_USER: postgres
@@ -71,7 +60,6 @@ services:
           SENHA=$$(python -c "import secrets; print(secrets.token_urlsafe(9))")
           airflow users create --username admin --password "$$SENHA" --firstname Admin --lastname Admin --role Admin --email admin@example.com && echo "usuario: admin | senha: $$SENHA" > /opt/airflow/logs/admin_login.txt
         fi
-        # Conexões nomeadas do Airflow (sem senha: bancos locais com autenticação trust)
         airflow connections delete aw_oltp > /dev/null 2>&1 || true
         airflow connections add aw_oltp --conn-type postgres --conn-host postgres-oltp --conn-port 5432 --conn-login postgres --conn-schema Adventureworks
         airflow connections delete dw_postgres > /dev/null 2>&1 || true

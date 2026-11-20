@@ -1,6 +1,3 @@
--- KPI 10 - Clientes ativos e recorrentes por ano
--- Ativo      : cliente com ao menos 1 pedido no ano.
--- Recorrente : cliente com 2 ou mais pedidos distintos no ano.
 WITH pedidos_cliente AS (
     SELECT t.ano,
            f.sk_cliente,

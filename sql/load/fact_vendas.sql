@@ -1,8 +1,3 @@
--- =====================================================================
--- Carga da fato a partir do staging: resolve chaves substitutas
--- (lookup nas dimensões) e faz UPSERT idempotente.
--- Chave não encontrada => membro -1 (Desconhecido).
--- =====================================================================
 INSERT INTO dw.fact_vendas (
     id_pedido, id_item_pedido, venda_online,
     sk_tempo, sk_produto, sk_cliente, sk_territorio, sk_vendedor, sk_oferta,

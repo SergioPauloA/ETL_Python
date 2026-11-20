@@ -1,4 +1,3 @@
--- Extração incremental: Oferta especial (promoção)
 SELECT
     o.specialofferid       AS id_oferta,
     o.description          AS descricao,

@@ -1,6 +1,3 @@
--- =====================================================================
--- 04 - Popula a dim_tempo (2015-01-01 a 2035-12-31). Idempotente.
--- =====================================================================
 INSERT INTO dw.dim_tempo (sk_tempo, data, ano, semestre, trimestre, mes, nome_mes, ano_mes,
                           dia, dia_semana, nome_dia_semana, fim_de_semana)
 SELECT

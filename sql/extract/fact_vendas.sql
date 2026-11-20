@@ -1,5 +1,3 @@
--- Extração incremental: Itens de pedido (SalesOrderDetail) + cabeçalho (SalesOrderHeader).
--- Um item é reprocessado se o ITEM ou o CABEÇALHO do pedido foi modificado.
 SELECT
     d.salesorderid                           AS id_pedido,
     d.salesorderdetailid                     AS id_item_pedido,

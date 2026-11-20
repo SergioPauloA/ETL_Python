@@ -1,15 +1,3 @@
-"""
-Funções de ETL reutilizadas pela DAG `dw_adventureworks_etl`.
-
-Padrão adotado: ETL incremental baseada em *watermark* (marca d'água).
-  - Extract  : lê do OLTP somente linhas com ModifiedDate > watermark.
-  - Transform: desnormalização feita na própria query de extração (sql/extract/*.sql)
-               e cálculo das medidas da fato no SQL de carga (sql/load/fact_vendas.sql).
-  - Load     : UPSERT (INSERT ... ON CONFLICT DO UPDATE) -> carga idempotente.
-
-As conexões NÃO ficam no código: são resolvidas pelo Airflow a partir dos
-Connection IDs `aw_oltp` (origem) e `dw_postgres` (destino).
-"""
 import logging
 import os
 from pathlib import Path
@@ -20,13 +8,11 @@ from psycopg2.extras import execute_values
 
 log = logging.getLogger(__name__)
 
-# IDs de conexão cadastrados no Airflow (variáveis AIRFLOW_CONN_* ou UI)
 CONN_OLTP = "aw_oltp"
 CONN_DW = "dw_postgres"
 
 SQL_DIR = Path(os.environ.get("SQL_DIR", Path(__file__).resolve().parent.parent / "sql"))
 
-# Dimensão -> chave natural (usada no ON CONFLICT)
 DIMENSOES = {
     "dim_produto": "id_produto",
     "dim_cliente": "id_cliente",
@@ -40,11 +26,7 @@ def _ler_sql(*partes: str) -> str:
     return (SQL_DIR.joinpath(*partes)).read_text(encoding="utf-8")
 
 
-# ----------------------------------------------------------------------
-# Estrutura e controle
-# ----------------------------------------------------------------------
 def aplicar_ddl() -> None:
-    """Executa os scripts sql/ddl/*.sql (idempotentes) no DW, em ordem alfabética."""
     dw = PostgresHook(postgres_conn_id=CONN_DW)
     for arq in sorted((SQL_DIR / "ddl").glob("*.sql")):
         log.info("Aplicando DDL: %s", arq.name)
@@ -52,7 +34,6 @@ def aplicar_ddl() -> None:
 
 
 def ler_watermarks() -> dict:
-    """Lê a última carga de cada tabela. Retorna {tabela: 'ISO-8601'}."""
     dw = PostgresHook(postgres_conn_id=CONN_DW)
     linhas = dw.get_records("SELECT tabela, ultima_carga FROM dw.etl_controle")
     marcas = {t: ts.isoformat(sep=" ") for t, ts in linhas}
@@ -61,10 +42,6 @@ def ler_watermarks() -> dict:
 
 
 def atualizar_watermarks(resultados: list) -> None:
-    """
-    Avança o watermark SOMENTE após o sucesso de todas as cargas
-    (esta task só executa se as anteriores terminaram com sucesso).
-    """
     dw = PostgresHook(postgres_conn_id=CONN_DW)
     for r in resultados:
         if r["novo_watermark"]:
@@ -87,11 +64,7 @@ def atualizar_watermarks(resultados: list) -> None:
                  r["tabela"], r["linhas"], r["novo_watermark"])
 
 
-# ----------------------------------------------------------------------
-# Extract (OLTP)
-# ----------------------------------------------------------------------
 def _extrair(arquivo_sql: str, watermark: str):
-    """Executa a query de extração incremental no OLTP. Retorna (colunas, linhas)."""
     origem = PostgresHook(postgres_conn_id=CONN_OLTP)
     conn = origem.get_conn()
     try:
@@ -112,9 +85,6 @@ def _maior_modificacao(colunas, linhas):
     return max(valores).isoformat(sep=" ") if valores else None
 
 
-# ----------------------------------------------------------------------
-# Load - dimensões (SCD Tipo 1: UPSERT sobrescrevendo atributos)
-# ----------------------------------------------------------------------
 def carregar_dimensao(tabela: str, watermarks: dict) -> dict:
     chave = DIMENSOES[tabela]
     wm = watermarks[tabela]
@@ -150,9 +120,6 @@ def carregar_dimensao(tabela: str, watermarks: dict) -> dict:
             "novo_watermark": _maior_modificacao(colunas, linhas)}
 
 
-# ----------------------------------------------------------------------
-# Load - fato (staging -> lookup de chaves substitutas -> UPSERT)
-# ----------------------------------------------------------------------
 def carregar_fato(watermarks: dict) -> dict:
     tabela = "fact_vendas"
     wm = watermarks[tabela]
@@ -175,7 +142,7 @@ def carregar_fato(watermarks: dict) -> dict:
                 page_size=5000,
             )
             cur.execute(_ler_sql("load", "fact_vendas.sql"))
-        conn.commit()          # staging + upsert na MESMA transação
+        conn.commit()
     except Exception:
         conn.rollback()
         raise
@@ -187,9 +154,6 @@ def carregar_fato(watermarks: dict) -> dict:
             "novo_watermark": _maior_modificacao(colunas, linhas)}
 
 
-# ----------------------------------------------------------------------
-# Validação pós-carga (reconciliação OLTP x DW)
-# ----------------------------------------------------------------------
 def validar_carga() -> dict:
     oltp = PostgresHook(postgres_conn_id=CONN_OLTP)
     dw = PostgresHook(postgres_conn_id=CONN_DW)

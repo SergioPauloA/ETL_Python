@@ -1,4 +1,3 @@
--- Extração incremental: Produto + Subcategoria + Categoria (desnormalizado)
 SELECT
     p.productid                                   AS id_produto,
     p.name                                        AS nome,

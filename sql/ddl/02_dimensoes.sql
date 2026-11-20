@@ -1,28 +1,19 @@
--- =====================================================================
--- 02 - Tabelas dimensão (Star Schema, dimensões desnormalizadas, SCD Tipo 1)
--- Cada dimensão possui:
---   sk_*  : chave substituta (surrogate key)
---   id_*  : chave natural vinda do OLTP (UNIQUE, usada no UPSERT)
--- O membro -1 representa "Desconhecido / Não se aplica" (evita FK nula na fato).
--- =====================================================================
-
--- ---------------------------- dim_tempo -------------------------------
 CREATE TABLE IF NOT EXISTS dw.dim_tempo (
-    sk_tempo           INTEGER PRIMARY KEY,          -- AAAAMMDD
+    sk_tempo           INTEGER PRIMARY KEY,
     data               DATE        NOT NULL UNIQUE,
     ano                SMALLINT    NOT NULL,
     semestre           SMALLINT    NOT NULL,
     trimestre          SMALLINT    NOT NULL,
     mes                SMALLINT    NOT NULL,
     nome_mes           VARCHAR(15) NOT NULL,
-    ano_mes            CHAR(7)     NOT NULL,         -- AAAA-MM
+    ano_mes            CHAR(7)     NOT NULL,
     dia                SMALLINT    NOT NULL,
-    dia_semana         SMALLINT    NOT NULL,         -- 1=segunda ... 7=domingo
+    dia_semana         SMALLINT    NOT NULL,
     nome_dia_semana    VARCHAR(15) NOT NULL,
     fim_de_semana      BOOLEAN     NOT NULL
 );
 
--- ---------------------------- dim_produto -----------------------------
+
 CREATE TABLE IF NOT EXISTS dw.dim_produto (
     sk_produto            SERIAL PRIMARY KEY,
     id_produto            INTEGER      NOT NULL UNIQUE,
@@ -39,17 +30,17 @@ CREATE TABLE IF NOT EXISTS dw.dim_produto (
     dt_carga              TIMESTAMP    NOT NULL DEFAULT now()
 );
 
--- ---------------------------- dim_cliente -----------------------------
+
 CREATE TABLE IF NOT EXISTS dw.dim_cliente (
     sk_cliente            SERIAL PRIMARY KEY,
     id_cliente            INTEGER      NOT NULL UNIQUE,
-    tipo_cliente          VARCHAR(10)  NOT NULL,     -- 'Pessoa' ou 'Loja'
+    tipo_cliente          VARCHAR(10)  NOT NULL,
     nome_cliente          VARCHAR(160) NOT NULL,
     dt_modificacao_origem TIMESTAMP,
     dt_carga              TIMESTAMP    NOT NULL DEFAULT now()
 );
 
--- ---------------------------- dim_territorio --------------------------
+
 CREATE TABLE IF NOT EXISTS dw.dim_territorio (
     sk_territorio         SERIAL PRIMARY KEY,
     id_territorio         INTEGER      NOT NULL UNIQUE,
@@ -60,7 +51,7 @@ CREATE TABLE IF NOT EXISTS dw.dim_territorio (
     dt_carga              TIMESTAMP    NOT NULL DEFAULT now()
 );
 
--- ---------------------------- dim_vendedor ----------------------------
+
 CREATE TABLE IF NOT EXISTS dw.dim_vendedor (
     sk_vendedor           SERIAL PRIMARY KEY,
     id_vendedor           INTEGER      NOT NULL UNIQUE,
@@ -72,7 +63,7 @@ CREATE TABLE IF NOT EXISTS dw.dim_vendedor (
     dt_carga              TIMESTAMP    NOT NULL DEFAULT now()
 );
 
--- ---------------------------- dim_oferta_especial ---------------------
+
 CREATE TABLE IF NOT EXISTS dw.dim_oferta_especial (
     sk_oferta             SERIAL PRIMARY KEY,
     id_oferta             INTEGER      NOT NULL UNIQUE,
@@ -88,7 +79,7 @@ CREATE TABLE IF NOT EXISTS dw.dim_oferta_especial (
     dt_carga              TIMESTAMP    NOT NULL DEFAULT now()
 );
 
--- ---------------------------- Membros "Desconhecido" (-1) -------------
+
 INSERT INTO dw.dim_produto (sk_produto, id_produto, nome, numero_produto, cor, custo_padrao, preco_lista,
                             id_subcategoria, subcategoria, id_categoria, categoria)
 VALUES (-1, -1, 'Desconhecido', 'N/D', 'N/D', 0, 0, -1, 'Desconhecido', -1, 'Desconhecido')

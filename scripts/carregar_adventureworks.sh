@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Carrega o AdventureWorks (versão PostgreSQL de lorint) no container postgres-oltp.
-# Pré-requisitos no seu computador: curl, unzip, ruby, psql. (Usuários de Windows: veja README, seção "Windows/PowerShell".)
-# Uso: ./scripts/carregar_adventureworks.sh
 set -euo pipefail
 WORK="$(mktemp -d)"; cd "$WORK"
 echo ">> Baixando AdventureWorks..."

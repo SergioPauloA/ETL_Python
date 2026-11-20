@@ -1,6 +1,3 @@
--- KPI 04 - Margem bruta (%)
--- Fórmula: (SUM(valor_liquido) - SUM(custo_total)) / SUM(valor_liquido) * 100
--- Observação: custo_total usa o custo padrão do produto (SCD Tipo 1).
 SELECT COALESCE(p.categoria, 'TOTAL')                                          AS categoria,
        ROUND(SUM(f.valor_liquido), 2)                                          AS receita_liquida,
        ROUND(SUM(f.custo_total), 2)                                            AS custo_total,

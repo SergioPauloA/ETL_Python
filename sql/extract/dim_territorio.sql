@@ -1,4 +1,3 @@
--- Extração incremental: Território de vendas
 SELECT
     t.territoryid          AS id_territorio,
     t.name                 AS nome_territorio,
